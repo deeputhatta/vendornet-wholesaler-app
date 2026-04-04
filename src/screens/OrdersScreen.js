@@ -4,13 +4,11 @@ import {
   StyleSheet, ActivityIndicator, RefreshControl, Alert
 } from 'react-native';
 import api from '../services/api';
-import { useAuth } from '../context/AuthContext';
 
 export default function OrdersScreen({ navigation }) {
   const [subOrders, setSubOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const { user } = useAuth();
 
   useEffect(() => {
     loadOrders();
@@ -92,6 +90,21 @@ export default function OrdersScreen({ navigation }) {
           <Text style={styles.rejectText}>Reject</Text>
         </TouchableOpacity>
       </View>
+
+      <View style={styles.actions}>
+        <TouchableOpacity
+          style={styles.driverBtn}
+          onPress={() => navigation.navigate('AssignDriver', { subOrder: item })}
+        >
+          <Text style={styles.driverText}>Assign Driver</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.invoiceBtn}
+          onPress={() => navigation.navigate('UploadInvoice', { subOrder: item })}
+        >
+          <Text style={styles.invoiceText}>Upload Invoice</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
@@ -143,9 +156,15 @@ const styles = StyleSheet.create({
   itemName: { fontSize: 13, color: '#333', fontWeight: '500' },
   itemQty: { fontSize: 12, color: '#888' },
   autoCancel: { fontSize: 11, color: '#E24B4A', marginTop: 8 },
-  actions: { flexDirection: 'row', gap: 10, marginTop: 12 },
+  actions: { flexDirection: 'row', gap: 10, marginTop: 10 },
   acceptBtn: { flex: 1, backgroundColor: '#0F6E56', borderRadius: 8, height: 44, justifyContent: 'center', alignItems: 'center' },
   acceptText: { color: '#fff', fontWeight: '600' },
   rejectBtn: { flex: 1, backgroundColor: '#FCEBEB', borderRadius: 8, height: 44, justifyContent: 'center', alignItems: 'center' },
-  rejectText: { color: '#791F1F', fontWeight: '600' }
+  rejectText: { color: '#791F1F', fontWeight: '600' },
+  driverBtn: { flex: 1, backgroundColor: '#E6F1FB', borderRadius: 8, height: 44, justifyContent: 'center', alignItems: 'center' },
+  driverText: { color: '#0C447C', fontWeight: '600', fontSize: 13 },
+  invoiceBtn: { flex: 1, backgroundColor: '#FAEEDA', borderRadius: 8, height: 44, justifyContent: 'center', alignItems: 'center' },
+  invoiceText: { color: '#633806', fontWeight: '600', fontSize: 13 },
+  empty: { flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 100 },
+  emptyText: { fontSize: 16, color: '#888' }
 });

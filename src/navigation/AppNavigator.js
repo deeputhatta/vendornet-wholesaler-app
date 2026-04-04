@@ -7,6 +7,8 @@ import { useAuth } from '../context/AuthContext';
 
 import LoginScreen from '../screens/LoginScreen';
 import OrdersScreen from '../screens/OrdersScreen';
+import AssignDriverScreen from '../screens/AssignDriverScreen';
+import UploadInvoiceScreen from '../screens/UploadInvoiceScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -40,7 +42,11 @@ export default function AppNavigator() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {user ? (
-          <Stack.Screen name="Main" component={HomeTabs} />
+          <>
+            <Stack.Screen name="Main" component={HomeTabs} />
+            <Stack.Screen name="AssignDriver" component={AssignDriverScreen} />
+            <Stack.Screen name="UploadInvoice" component={UploadInvoiceScreen} />
+          </>
         ) : (
           <Stack.Screen name="Login" component={LoginScreen} />
         )}
