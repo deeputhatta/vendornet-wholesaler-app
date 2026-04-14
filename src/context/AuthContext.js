@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import api from '../services/api';
 
 const AuthContext = createContext(null);
 
@@ -33,6 +34,17 @@ export const AuthProvider = ({ children }) => {
     await AsyncStorage.setItem('user', JSON.stringify(userData));
     setToken(tokenData.token);
     setUser(userData);
+
+    // Save FCM token to backend
+    try {
+      const fcmToken = await AsyncStorage.getItem('fcm_token');
+      if (fcmToken) {
+        await api.post('/users/fcm-token', { fcm_token: fcmToken });
+        console.log('FCM token saved to backend');
+      }
+    } catch (err) {
+      console.log('FCM token save failed:', err.message);
+    }
   };
 
   const logout = async () => {

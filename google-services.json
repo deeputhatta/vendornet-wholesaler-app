@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "971155627444",
+    "project_id": "vendornet-bc3c0",
+    "storage_bucket": "vendornet-bc3c0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:971155627444:android:ad6c6f339c4662e56126e1",
+        "android_client_info": {
+          "package_name": "in.vendornet.retailer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNKVRlQ832ZreIow24Dct93OMp_TyIycQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:971155627444:android:fba2bd3528666c0b6126e1",
+        "android_client_info": {
+          "package_name": "in.vendornet.wholesaler"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNKVRlQ832ZreIow24Dct93OMp_TyIycQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

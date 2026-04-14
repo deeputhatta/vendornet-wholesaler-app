@@ -1,29 +1,46 @@
 {
   "expo": {
-    "name": "wholesaler-app",
-    "slug": "wholesaler-app",
+    "name": "VendorNet Wholesaler",
+    "slug": "vendornet-wholesaler",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#0F6E56"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "in.vendornet.wholesaler"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#0F6E56"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "in.vendornet.wholesaler",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#0F6E56"
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "9583f8a5-9c16-45d1-856c-6c14bced3857"
+      }
     }
   }
 }

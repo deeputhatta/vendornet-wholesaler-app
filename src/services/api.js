@@ -11,7 +11,6 @@ const api = axios.create({
   }
 });
 
-// Add token to every request
 api.interceptors.request.use(async (config) => {
   const token = await AsyncStorage.getItem('token');
   if (token) {
@@ -20,7 +19,6 @@ api.interceptors.request.use(async (config) => {
   return config;
 });
 
-// Auto refresh token on 401
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -50,34 +48,6 @@ export const authAPI = {
   verifyOTP: (mobile, otp, role, name, fcm_token) =>
     api.post('/auth/verify-otp', { mobile, otp, role, name, fcm_token }),
   refreshToken: (refresh_token) => api.post('/auth/refresh-token', { refresh_token })
-};
-
-export const searchAPI = {
-  search: (q, filters = {}) => api.get('/search', { params: { q, ...filters } }),
-};
-
-export const catalogueAPI = {
-  getCategories: () => api.get('/categories'),
-  getProducts: (category_id) => api.get('/products', { params: { category_id } }),
-  getVariants: (product_id) => api.get(`/products/${product_id}/variants`),
-};
-
-export const listingsAPI = {
-  getListings: (filters = {}) => api.get('/listings', { params: filters }),
-};
-
-export const ordersAPI = {
-  placeOrder: (orderData) => api.post('/orders', orderData),
-  getMyOrders: () => api.get('/orders/my'),
-};
-
-export const invoicesAPI = {
-  getMyInvoices: () => api.get('/invoices/my'),
-  getInvoice: (id) => api.get(`/invoices/${id}`),
-};
-
-export const deliveryAPI = {
-  getLocation: (subOrderId) => api.get(`/delivery/${subOrderId}/location`),
 };
 
 export default api;
