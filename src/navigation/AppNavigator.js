@@ -16,6 +16,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 import DashboardScreen from '../screens/DashboardScreen';
 import AnalyticsScreen from '../screens/AnalyticsScreen';
 import ProductManagementScreen from '../screens/ProductManagementScreen';
+import StaffManagementScreen from '../screens/StaffManagementScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -85,6 +86,15 @@ function HomeTabs() {
           headerShown: false,
         }}
       />
+	<Tab.Screen
+  name="Staff"
+  component={StaffManagementScreen}
+  options={{
+    tabBarLabel: 'Staff',
+    tabBarIcon: () => <Text style={{ fontSize: 20 }}>👥</Text>,
+    headerShown: false,
+  }}
+/>
     </Tab.Navigator>
   );
 }
