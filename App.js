@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { AuthProvider } from './src/context/AuthContext';
 import { ThemeProvider } from './src/context/ThemeContext';
+import { PermissionProvider } from './src/context/PermissionContext';
 import AppNavigator from './src/navigation/AppNavigator';
 import {
   registerForPushNotifications,
@@ -20,7 +21,9 @@ export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <AppNavigator />
+        <PermissionProvider>
+          <AppNavigator />
+        </PermissionProvider>
       </AuthProvider>
     </ThemeProvider>
   );

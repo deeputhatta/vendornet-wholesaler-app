@@ -5,8 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text, View } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import ThemeToggle from '../components/ThemeToggle';
-
+import { usePermissions } from '../context/PermissionContext';
 
 import LoginScreen from '../screens/LoginScreen';
 import OrdersScreen from '../screens/OrdersScreen';
@@ -23,6 +22,7 @@ const Tab = createBottomTabNavigator();
 
 function HomeTabs() {
   const { theme } = useTheme();
+  const { isAdmin, can } = usePermissions();
   const c = theme.colors;
 
   return (
@@ -40,6 +40,7 @@ function HomeTabs() {
         headerTitleStyle: { fontWeight: '600', color: c.text },
       }}
     >
+      {/* Home — always visible */}
       <Tab.Screen
         name="Dashboard"
         component={DashboardScreen}
@@ -49,34 +50,60 @@ function HomeTabs() {
           headerShown: false,
         }}
       />
-      <Tab.Screen
-        name="Orders"
-        component={OrdersScreen}
-        options={{
-          tabBarLabel: 'Orders',
-          tabBarIcon: () => <Text style={{ fontSize: 20 }}>📦</Text>,
-          headerShown: false,
-        }}
-      />
 
-<Tab.Screen
-  name="Products"
-  component={ProductManagementScreen}
-  options={{
-    tabBarLabel: 'Products',
-    tabBarIcon: () => <Text style={{ fontSize: 20 }}>🏷</Text>,
-    headerShown: false,
-  }}
-/>
-      <Tab.Screen
-        name="Analytics"
-        component={AnalyticsScreen}
-        options={{
-          tabBarLabel: 'Analytics',
-          tabBarIcon: () => <Text style={{ fontSize: 20 }}>📈</Text>,
-          headerShown: false,
-        }}
-      />
+      {/* Orders — needs view_orders */}
+      {can('view_orders') && (
+        <Tab.Screen
+          name="Orders"
+          component={OrdersScreen}
+          options={{
+            tabBarLabel: 'Orders',
+            tabBarIcon: () => <Text style={{ fontSize: 20 }}>📦</Text>,
+            headerShown: false,
+          }}
+        />
+      )}
+
+      {/* Products — needs manage_listings */}
+      {can('manage_listings') && (
+        <Tab.Screen
+          name="Products"
+          component={ProductManagementScreen}
+          options={{
+            tabBarLabel: 'Products',
+            tabBarIcon: () => <Text style={{ fontSize: 20 }}>🏷</Text>,
+            headerShown: false,
+          }}
+        />
+      )}
+
+      {/* Analytics — needs view_analytics */}
+      {can('view_analytics') && (
+        <Tab.Screen
+          name="Analytics"
+          component={AnalyticsScreen}
+          options={{
+            tabBarLabel: 'Analytics',
+            tabBarIcon: () => <Text style={{ fontSize: 20 }}>📈</Text>,
+            headerShown: false,
+          }}
+        />
+      )}
+
+      {/* Staff — admin only */}
+      {isAdmin && (
+        <Tab.Screen
+          name="Staff"
+          component={StaffManagementScreen}
+          options={{
+            tabBarLabel: 'Staff',
+            tabBarIcon: () => <Text style={{ fontSize: 20 }}>👥</Text>,
+            headerShown: false,
+          }}
+        />
+      )}
+
+      {/* Profile — always visible */}
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
@@ -86,15 +113,6 @@ function HomeTabs() {
           headerShown: false,
         }}
       />
-	<Tab.Screen
-  name="Staff"
-  component={StaffManagementScreen}
-  options={{
-    tabBarLabel: 'Staff',
-    tabBarIcon: () => <Text style={{ fontSize: 20 }}>👥</Text>,
-    headerShown: false,
-  }}
-/>
     </Tab.Navigator>
   );
 }
