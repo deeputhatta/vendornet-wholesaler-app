@@ -106,7 +106,7 @@ console.log('Active count:', activeListings.length);
     can('manage_listings') && {
       icon: '🏷', label: 'Products', color: '#F2C94C',
       bg: '#2A1F00', border: '#3A2F00',
-      onPress: () => navigation.navigate('Products'),
+      onPress: () => navigation.navigate('Inventory'),
     },
     isAdmin && {
       icon: '👥', label: 'Staff', color: '#BF5AF2',
@@ -218,12 +218,12 @@ console.log('Active count:', activeListings.length);
               {
                 icon: '🏷', label: 'Active Listings',
                 value: stats?.totalListings ?? 0, color: '#30D158', bg: '#003A10',
-                onPress: can('manage_listings') ? () => navigation.navigate('Products') : null,
+                onPress: can('manage_listings') ? () => navigation.navigate('Inventory') : null,
               },
               {
                 icon: '⚠️', label: 'Low Stock',
                 value: stats?.lowStock ?? 0, color: '#FF9500', bg: '#2A1500',
-                onPress: can('manage_listings') ? () => navigation.navigate('Products') : null,
+                onPress: can('manage_listings') ? () => navigation.navigate('Inventory') : null,
               },
               {
                 icon: '💰', label: 'Commission',
