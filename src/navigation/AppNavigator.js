@@ -12,6 +12,7 @@ import OrdersScreen from '../screens/OrdersScreen';
 import AssignDriverScreen from '../screens/AssignDriverScreen';
 import UploadInvoiceScreen from '../screens/UploadInvoiceScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import CategoryPickerScreen from '../screens/CategoryPickerScreen';
 import DashboardScreen from '../screens/DashboardScreen';
 import AnalyticsScreen from '../screens/AnalyticsScreen';
 import InventoryScreen from '../screens/InventoryScreen';
@@ -78,7 +79,9 @@ function MainStack() {
       <Stack.Screen name="UploadInvoice" component={UploadInvoiceScreen}
         options={{ headerShown: true, headerTitle: 'Upload Invoice', headerStyle: { backgroundColor: c.surface }, headerTintColor: c.text, headerTitleStyle: { fontWeight: '600' }, headerBackTitle: '' }} />
       <Stack.Screen name="ReportDownload" component={ReportDownloadScreen}
-        options={{ headerShown: true, headerTitle: 'Download Report', headerStyle: { backgroundColor: c.surface }, headerTintColor: c.text, headerTitleStyle: { fontWeight: '600' }, headerBackTitle: '' }} />
+        options={{ headerShown: false }} />
+      <Stack.Screen name="CategoryPicker" component={CategoryPickerScreen}
+        options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }
@@ -115,3 +118,5 @@ export default function AppNavigator() {
     </NavigationContainer>
   );
 }
+
+

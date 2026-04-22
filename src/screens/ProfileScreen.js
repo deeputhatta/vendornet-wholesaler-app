@@ -6,7 +6,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ navigation }) {
   const { user, logout } = useAuth();
   const { theme, isDark, toggleTheme } = useTheme();
   const c = theme.colors;
@@ -70,6 +70,17 @@ export default function ProfileScreen() {
             }]} />
           </TouchableOpacity>
         </View>
+
+        {/* My Categories */}
+        <TouchableOpacity
+          style={[styles.row, { borderBottomColor: c.borderLight }]}
+          onPress={() => navigation.navigate('CategoryPicker')}>
+          <View style={styles.rowLeft}>
+            <Text style={styles.rowIcon}>🏷</Text>
+            <Text style={[styles.rowLabel, { color: c.text }]}>My Categories</Text>
+          </View>
+          <Text style={[styles.rowValue, { color: c.textMuted }]}>→</Text>
+        </TouchableOpacity>
 
         {/* App version */}
         <View style={styles.row}>

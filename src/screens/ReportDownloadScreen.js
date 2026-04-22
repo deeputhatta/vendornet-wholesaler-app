@@ -81,7 +81,7 @@ export default function ReportDownloadScreen() {
       });
 
       const token = await AsyncStorage.getItem('token');
-      const url = `${api.defaults.baseURL}/orders/wholesaler/report?${params}`;
+      const url = `${api.defaults.baseURL}/orders/wholesaler/excel-report?${params}`;
 
       const response = await fetch(url, {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -135,7 +135,7 @@ export default function ReportDownloadScreen() {
                 await Sharing.shareAsync(tempUri, { mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', dialogTitle: 'Open Report' });
               }
             },
-            { text: 'Cancel', style: 'cancel' }
+            { text: '❌ Cancel', style: 'cancel' }
           ]
         );
       } else {
@@ -162,7 +162,7 @@ export default function ReportDownloadScreen() {
       {/* Header */}
       <View style={[styles.header, { backgroundColor: c.primary }]}>
         <Text style={styles.title}>📊 Download Report</Text>
-        <Text style={styles.subtitle}>Export your orders as CSV</Text>
+        <Text style={styles.subtitle}>Export your orders as Excel (5 sheets)</Text>
       </View>
 
       {/* Step 1: Date Range */}
@@ -306,7 +306,7 @@ export default function ReportDownloadScreen() {
             <ActivityIndicator color="#000" size="small" />
           ) : (
             <Text style={[styles.downloadBtnText, { color: selectedFields.length > 0 ? '#000' : c.textMuted }]}>
-              📥 Download CSV Report
+              📥 Download Excel Report
             </Text>
           )}
         </TouchableOpacity>
@@ -350,3 +350,4 @@ const styles = StyleSheet.create({
   downloadBtn: { borderRadius: 14, paddingVertical: 16, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8 },
   downloadBtnText: { fontSize: 16, fontWeight: '800' },
 });
+
