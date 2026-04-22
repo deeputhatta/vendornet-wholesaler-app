@@ -1,79 +1,111 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const THEME_KEY = '@vendornet_wholesaler_theme';
+const THEME_KEY = '@vendornet_theme';
 
 export const lightTheme = {
   dark: false,
   colors: {
-    background: '#F5F5F5',
+    // Backgrounds
+    background: '#F2F4F7',
     surface: '#FFFFFF',
-    surfaceSecondary: '#F0F0F0',
-    primary: '#0F6E56',
-    primaryLight: '#E1F5EE',
+    surfaceSecondary: '#F8F9FB',
+    card: '#FFFFFF',
+    // Brand
+    primary: '#185FA5',
+    primaryLight: '#E8F0FB',
     accent: '#F2C94C',
     success: '#1D9E75',
     successLight: '#E6F7F2',
-    text: '#1C1C1E',
-    textSecondary: '#6B6B6B',
-    textMuted: '#9E9E9E',
+    // Text
+    text: '#1A1A2E',
+    textSecondary: '#4A4A6A',
+    textMuted: '#8A8A9A',
     textOnPrimary: '#FFFFFF',
-    border: '#E0E0E0',
-    borderLight: '#F0F0F0',
-    inputBackground: '#F8F8F8',
-    placeholder: '#AAAAAA',
-    error: '#E53935',
+    // UI
+    border: '#E2E6EF',
+    borderLight: '#EEF0F5',
+    inputBackground: '#FFFFFF',
+    placeholder: '#BBBBCC',
+    // Status colors - light mode friendly
+    statusPendingBg: '#FFF8E7',
+    statusPendingText: '#B7750D',
+    statusSuccessBg: '#E8F7F0',
+    statusSuccessText: '#1D9E75',
+    statusDangerBg: '#FEEAEA',
+    statusDangerText: '#D32F2F',
+    statusInfoBg: '#E8F0FB',
+    statusInfoText: '#185FA5',
+    statusPurpleBg: '#F3E8FF',
+    statusPurpleText: '#7B2FBE',
+    // Tab bar
     tabBar: '#FFFFFF',
-    tabBarActive: '#0F6E56',
-    tabBarInactive: '#9E9E9E',
+    tabBarActive: '#185FA5',
+    tabBarInactive: '#9E9EA8',
+    // Shadow
+    shadow: '#C8CDD8',
   },
 };
 
 export const darkTheme = {
   dark: true,
   colors: {
-    background: '#000000',
-    surface: '#1C1C1E',
-    surfaceSecondary: '#2C2C2E',
-    primary: '#1D9E75',
-    primaryLight: '#0A2E22',
+    // Backgrounds
+    background: '#0A0A0F',
+    surface: '#16161E',
+    surfaceSecondary: '#1E1E2A',
+    card: '#16161E',
+    // Brand
+    primary: '#4A90D9',
+    primaryLight: '#0A2540',
     accent: '#F2C94C',
     success: '#1D9E75',
     successLight: '#0A2E22',
-    text: '#F2F2F7',
-    textSecondary: '#ABABAB',
-    textMuted: '#636366',
+    // Text
+    text: '#F0F0F8',
+    textSecondary: '#A0A0B8',
+    textMuted: '#606078',
     textOnPrimary: '#FFFFFF',
-    border: '#3A3A3C',
-    borderLight: '#2C2C2E',
-    inputBackground: '#2C2C2E',
-    placeholder: '#636366',
-    error: '#FF453A',
-    tabBar: '#1C1C1E',
-    tabBarActive: '#1D9E75',
-    tabBarInactive: '#636366',
+    // UI
+    border: '#2A2A3A',
+    borderLight: '#1E1E2A',
+    inputBackground: '#1E1E2A',
+    placeholder: '#505068',
+    // Status colors - dark mode
+    statusPendingBg: '#2A1F00',
+    statusPendingText: '#F2C94C',
+    statusSuccessBg: '#003A10',
+    statusSuccessText: '#30D158',
+    statusDangerBg: '#2A0A0A',
+    statusDangerText: '#FF453A',
+    statusInfoBg: '#001830',
+    statusInfoText: '#0A84FF',
+    statusPurpleBg: '#1A0A2E',
+    statusPurpleText: '#BF5AF2',
+    // Tab bar
+    tabBar: '#16161E',
+    tabBarActive: '#4A90D9',
+    tabBarInactive: '#505068',
+    // Shadow
+    shadow: '#000000',
   },
 };
 
 const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
-  const [isDark, setIsDark] = useState(false);
-
+  const [isDark, setIsDark] = useState(true);
   useEffect(() => {
     AsyncStorage.getItem(THEME_KEY).then(value => {
       if (value !== null) setIsDark(value === 'dark');
+      else setIsDark(true);
     });
   }, []);
-
   const toggleTheme = async () => {
     const next = !isDark;
     setIsDark(next);
     await AsyncStorage.setItem(THEME_KEY, next ? 'dark' : 'light');
   };
-
   const theme = isDark ? darkTheme : lightTheme;
-
   return (
     <ThemeContext.Provider value={{ theme, isDark, toggleTheme }}>
       {children}

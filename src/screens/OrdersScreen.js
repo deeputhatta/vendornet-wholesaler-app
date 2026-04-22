@@ -276,14 +276,21 @@ export default function OrdersScreen({ navigation }) {
     <View style={[styles.container, { backgroundColor: c.background }]}>
       {/* Header */}
       <View style={[styles.header, { backgroundColor: c.primary }]}>
-        <View>
-          <Text style={styles.title}>Orders</Text>
-          <Text style={styles.headerSub}>
-            {allOrders.length} total{pendingCount > 0 ? ` · ${pendingCount} need action` : ''}
-          </Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <View>
+            <Text style={styles.title}>Orders</Text>
+            <Text style={styles.headerSub}>
+              {allOrders.length} total{pendingCount > 0 ? ` · ${pendingCount} need action` : ''}
+            </Text>
+          </View>
+          <TouchableOpacity
+            style={{ backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8, flexDirection: 'row', alignItems: 'center', gap: 5, borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)' }}
+            onPress={() => navigation.getParent()?.navigate('ReportDownload')}>
+            <Text style={{ fontSize: 14 }}>📥</Text>
+            <Text style={{ color: '#fff', fontSize: 12, fontWeight: '700' }}>Report</Text>
+          </TouchableOpacity>
         </View>
       </View>
-
       {/* Date filter */}
       <View style={[styles.filterSection, { backgroundColor: c.surface, borderBottomColor: c.border }]}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterContent}>
