@@ -18,6 +18,15 @@ const validateGSTIN = (gstin) => {
   return gstinRegex.test(gstin.toUpperCase());
 };
 
+const checkGSTINUnique = async (gstin) => {
+  try {
+    const res = await authAPI.checkGSTIN(gstin);
+    return res.data;
+  } catch {
+    return { exists: false };
+  }
+};
+
 export default function LoginScreen() {
   const [mobile, setMobile] = useState('');
   const [otp, setOtp] = useState('');
@@ -29,6 +38,7 @@ export default function LoginScreen() {
   const [businessName, setBusinessName] = useState('');
   const [gstin, setGstin] = useState('');
   const [gstinError, setGstinError] = useState('');
+  const [gstinChecking, setGstinChecking] = useState(false);
   const [address, setAddress] = useState('');
   const [pincode, setPincode] = useState('');
   const [lat, setLat] = useState(null);
@@ -286,11 +296,24 @@ export default function LoginScreen() {
                   placeholderTextColor={c.placeholder}
                   value={gstin}
                   onChangeText={(v) => { setGstin(v.toUpperCase()); setGstinError(''); }}
+                  onBlur={async () => {
+                    if (gstin.length === 15 && validateGSTIN(gstin)) {
+                      setGstinChecking(true);
+                      const result = await checkGSTINUnique(gstin);
+                      setGstinChecking(false);
+                      if (result.exists) {
+                        setGstinError('This GSTIN is already registered as ' + (result.role||'').replace(/_/g,' '));
+                      }
+                    }
+                  }}
                   maxLength={15}
                   autoCapitalize="characters"
                 />
                 {gstinError ? <Text style={styles.errorText}>{gstinError}</Text> : null}
-                <Text style={[styles.hintText, { color: c.textMuted }]}>Mandatory for wholesaler registration</Text>
+                {gstinChecking 
+                  ? <Text style={[styles.hintText, { color: c.textMuted }]}>Checking GSTIN...</Text>
+                  : <Text style={[styles.hintText, { color: c.textMuted }]}>Mandatory for wholesaler registration</Text>
+                }
               </View>
 
               <View style={{ marginBottom: 16 }}>
@@ -396,7 +419,7 @@ export default function LoginScreen() {
 
               <TouchableOpacity
                 style={[styles.btn, { backgroundColor: '#1D9E75' }]}
-                onPress={registerAndLogin} disabled={loading}>
+                onPress={() => { if (!lat || !lng) { Alert.alert('Location Required', 'Please detect your warehouse location or enter coordinates manually.'); return; } registerAndLogin(); }} disabled={loading}>
                 {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnText}>Create Wholesaler Account →</Text>}
               </TouchableOpacity>
               <TouchableOpacity style={styles.backRow} onPress={() => setStep('register_details')}>
@@ -454,3 +477,4 @@ const styles = StyleSheet.create({
   summaryTitle: { fontSize: 10, fontWeight: '700', letterSpacing: 1, marginBottom: 4 },
   summaryRow2: { fontSize: 13 },
 });
+

@@ -44,6 +44,7 @@ api.interceptors.response.use(
 );
 
 export const authAPI = {
+  checkGSTIN: (gstin) => api.get('/auth/check-gstin', { params: { gstin } }),
   sendOTP: (mobile) => api.post('/auth/send-otp', { mobile }),
   verifyOTP: (mobile, otp, role, name, fcm_token) =>
     api.post('/auth/verify-otp', { mobile, otp, role, name, fcm_token }),

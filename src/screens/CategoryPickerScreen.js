@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { CommonActions } from '@react-navigation/native';
+import { callbacks } from '../utils/callbacks';
+import { appEvents } from '../utils/appEvents';
 import {
   View, Text, ScrollView, TouchableOpacity,
-  StyleSheet, ActivityIndicator, Alert
+  StyleSheet, ActivityIndicator, Alert, TextInput
 } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -26,6 +29,7 @@ export default function CategoryPickerScreen({ navigation, route }) {
   const [selected, setSelected] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const { theme } = useTheme();
   const c = theme.colors;
   const insets = useSafeAreaInsets();
@@ -42,7 +46,12 @@ export default function CategoryPickerScreen({ navigation, route }) {
         api.get('/categories'),
         api.get('/categories/my').catch(() => ({ data: { categories: [] } })),
       ]);
-      setCategories(allRes.data.categories || []);
+      const cats = allRes.data.categories || [];
+      // Add Others option
+      if (!cats.find(cat => cat.name === 'Others')) {
+        cats.push({ category_id: 'others', name: 'Others', slug: 'others' });
+      }
+      setCategories(cats);
       setSelected(myRes.data.categories?.map(cat => cat.category_id) || []);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
@@ -68,7 +77,7 @@ export default function CategoryPickerScreen({ navigation, route }) {
     try {
       await api.put('/categories/my', { category_ids: selected });
       if (isOnboarding) {
-        navigation.replace('Main');
+        if (callbacks.onCategoryDone) callbacks.onCategoryDone();
       } else {
         Alert.alert('Saved', 'Your categories have been updated.', [
           { text: 'OK', onPress: () => navigation.goBack() }
@@ -102,8 +111,26 @@ export default function CategoryPickerScreen({ navigation, route }) {
         )}
       </View>
 
+      {/* Search bar */}
+      <View style={[styles.searchBar, { backgroundColor: c.surface, borderBottomColor: c.border }]}>
+        <View style={[styles.searchBox, { backgroundColor: c.surfaceSecondary, borderColor: c.border }]}>
+          <Text style={{ fontSize: 16, marginRight: 8 }}>🔍</Text>
+          <TextInput
+            style={[styles.searchInput, { color: c.text, flex: 1 }]}
+            placeholder="Search categories..."
+            placeholderTextColor={c.textMuted}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity onPress={() => setSearchQuery('')}>
+              <Text style={{ fontSize: 14, color: c.textMuted, paddingHorizontal: 4 }}>✕</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.listContent} showsVerticalScrollIndicator={false}>
-        {categories.map(cat => {
+        {categories.filter(cat => cat.name.toLowerCase().includes((searchQuery||'').toLowerCase())).map(cat => {
           const cfg = CATEGORY_CONFIG[cat.name] || DEFAULT_CONFIG;
           const isSelected = selected.includes(cat.category_id);
           return (
@@ -132,14 +159,8 @@ export default function CategoryPickerScreen({ navigation, route }) {
         })}
       </ScrollView>
 
-      <View style={[styles.footer, {
-        backgroundColor: c.surface, borderTopColor: c.border,
-        paddingBottom: Math.max(insets.bottom + 8, 16),
-      }]}>
-        <View style={styles.footerInfo}>
-          <Text style={[styles.footerCount, { color: c.text }]}>{selected.length}/{MAX_CATEGORIES}</Text>
-          <Text style={[styles.footerLabel, { color: c.textMuted }]}>selected</Text>
-        </View>
+      <View style={[styles.footer, { backgroundColor: c.surface, borderTopColor: c.border, paddingBottom: Math.max(insets.bottom, 8) }]}>
+        <Text style={[styles.footerCount, { color: c.text }]}>{selected.length}/{MAX_CATEGORIES} selected</Text>
         <View style={styles.footerBtns}>
           {!isOnboarding && (
             <TouchableOpacity style={[styles.cancelBtn, { borderColor: c.border }]} onPress={() => navigation.goBack()}>
@@ -147,17 +168,10 @@ export default function CategoryPickerScreen({ navigation, route }) {
             </TouchableOpacity>
           )}
           <TouchableOpacity
-            style={[styles.saveBtn, {
-              backgroundColor: selected.length > 0 ? c.primary : c.primaryLight,
-              flex: isOnboarding ? 1 : undefined,
-            }]}
-            onPress={save} disabled={saving}>
-            {saving
-              ? <ActivityIndicator color="#fff" size="small" />
-              : <Text style={[styles.saveBtnText, { color: selected.length > 0 ? '#fff' : c.primary }]}>
-                  {isOnboarding ? 'Continue →' : 'Save'}
-                </Text>
-            }
+            style={[styles.saveBtn, { backgroundColor: selected.length > 0 ? c.primary : c.border }]}
+            onPress={save}
+            disabled={saving || selected.length === 0}>
+            {saving ? <ActivityIndicator size="small" color="#fff" /> : <Text style={styles.saveBtnText}>{isOnboarding ? 'Continue →' : 'Save'}</Text>}
           </TouchableOpacity>
         </View>
       </View>
@@ -175,6 +189,9 @@ const styles = StyleSheet.create({
   subtitle: { fontSize: 13, color: 'rgba(255,255,255,0.7)' },
   countBadge: { alignSelf: 'flex-start', marginTop: 10, backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 20, paddingHorizontal: 12, paddingVertical: 4 },
   countBadgeText: { color: '#fff', fontSize: 12, fontWeight: '600' },
+  searchBar: { paddingHorizontal: 12, paddingVertical: 10, borderBottomWidth: 1 },
+  searchBox: { flexDirection: 'row', alignItems: 'center', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 8, borderWidth: 1 },
+  searchInput: { fontSize: 14, paddingVertical: 0 },
   scroll: { flex: 1 },
   listContent: { padding: 12 },
   tile: { flexDirection: 'row', alignItems: 'center', borderRadius: 12, marginBottom: 8, padding: 12, borderWidth: 1.5, gap: 12 },
@@ -183,13 +200,17 @@ const styles = StyleSheet.create({
   tileName: { flex: 1, fontSize: 15, fontWeight: '600' },
   check: { width: 22, height: 22, borderRadius: 11, borderWidth: 1.5, justifyContent: 'center', alignItems: 'center', flexShrink: 0 },
   checkMark: { color: '#fff', fontSize: 12, fontWeight: '800' },
-  footer: { padding: 12, paddingHorizontal: 16, borderTopWidth: 1, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  footer: { paddingHorizontal: 14, paddingVertical: 10, borderTopWidth: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   footerInfo: { flex: 1 },
-  footerCount: { fontSize: 20, fontWeight: '800' },
+  footerCount: { fontSize: 15, fontWeight: '800' },
   footerLabel: { fontSize: 11, marginTop: 1 },
   footerBtns: { flexDirection: 'row', gap: 8 },
-  cancelBtn: { borderRadius: 10, height: 44, paddingHorizontal: 16, justifyContent: 'center', alignItems: 'center', borderWidth: 1 },
+  cancelBtn: { borderRadius: 10, height: 38, paddingHorizontal: 14, justifyContent: 'center', alignItems: 'center', borderWidth: 1 },
   cancelBtnText: { fontSize: 14, fontWeight: '600' },
-  saveBtn: { borderRadius: 10, height: 44, paddingHorizontal: 24, justifyContent: 'center', alignItems: 'center', minWidth: 80 },
-  saveBtnText: { fontSize: 14, fontWeight: '700' },
+  saveBtn: { borderRadius: 10, height: 38, paddingHorizontal: 18, justifyContent: 'center', alignItems: 'center' },
+  saveBtnText: { color: '#fff', fontSize: 13, fontWeight: '700' },
 });
+
+
+
+
