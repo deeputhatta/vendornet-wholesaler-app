@@ -75,7 +75,7 @@ export default function CategoryPickerScreen({ navigation, route }) {
     }
     setSaving(true);
     try {
-      await api.put('/categories/my', { category_ids: selected });
+      await api.put('/categories/my', { category_ids: selected.filter(id => id !== 'others').filter(id => id !== 'others').filter(id => id !== 'others') });
       if (isOnboarding) {
         if (callbacks.onCategoryDone) callbacks.onCategoryDone();
       } else {
