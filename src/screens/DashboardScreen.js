@@ -221,7 +221,7 @@ export default function DashboardScreen({ navigation }) {
               <View style={[styles.pipelineCard, { backgroundColor: c.surface }]}>
                 {[
                   { label: 'Pending', key: 'pending', color: '#F2C94C', icon: '⏳' },
-                  { label: 'Accepted', key: 'accepted', color: '#1D9E75', icon: '✓' },
+                  { label: 'Accepted', key: 'accepted', color: '#1D9E75', icon: '👍' },
                   { label: 'Packing', key: 'packing', color: '#0A84FF', icon: '📦' },
                   { label: 'Dispatched', key: 'dispatched', color: '#F2C94C', icon: '🚚' },
                   { label: 'Delivered', key: 'delivered', color: '#30D158', icon: '✅' },

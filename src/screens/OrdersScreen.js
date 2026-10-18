@@ -13,7 +13,9 @@ const STATUS_CONFIG = {
   pending:            { label: 'Pending',    color: '#F2C94C', bg: '#2A1F00', next: 'accepted',   nextLabel: '✓ Accept',          nextColor: '#30D158', nextBg: '#003A10' },
   accepted:           { label: 'Accepted',   color: '#1D9E75', bg: '#0A2E22', next: 'packing',    nextLabel: '📦 Start Packing',  nextColor: '#0A84FF', nextBg: '#001830' },
   packing:            { label: 'Packing',    color: '#0A84FF', bg: '#001830', next: 'dispatched', nextLabel: '🚚 Mark Dispatched', nextColor: '#F2C94C', nextBg: '#2A1F00' },
-  dispatched:         { label: 'Dispatched', color: '#F2C94C', bg: '#2A1F00', next: null },
+  driver_assigned:    { label: 'Driver Assigned', color: '#9B59B6', bg: '#2A0A2E', next: null },
+  in_transit:         { label: 'In Transit', color: '#F2C94C', bg: '#2A1F00', next: null },
+  dispatched:         { label: 'Dispatched', color: '#F2C94C', bg: '#2A1F00', next: 'delivered', nextLabel: '✅ Mark Delivered', nextColor: '#30D158', nextBg: '#003A10' },
   delivered:          { label: 'Delivered',  color: '#30D158', bg: '#003A10', next: null },
   completed:          { label: 'Completed',  color: '#30D158', bg: '#003A10', next: null },
   invoice_uploaded:   { label: 'Invoiced',   color: '#30D158', bg: '#003A10', next: null },
@@ -165,6 +167,22 @@ export default function OrdersScreen({ navigation }) {
     } finally { setUpdating(null); }
   };
 
+  const handleNextStatus = (item, cfg) => {
+    if (cfg.next === 'dispatched' && !item.driver_name) {
+      Alert.alert(
+        'No Driver Assigned',
+        'This order has no driver assigned yet. Assign one before dispatching?',
+        [
+          { text: 'Assign Driver', onPress: () => navigation.navigate('BulkAssign', { subOrder: item }) },
+          { text: 'Dispatch Anyway', onPress: () => updateStatus(item.sub_order_id, cfg.next) },
+          { text: 'Cancel', style: 'cancel' },
+        ]
+      );
+    } else {
+      updateStatus(item.sub_order_id, cfg.next);
+    }
+  };
+
   const confirmReject = async () => {
     if (!rejectId) return;
     setUpdating(rejectId);
@@ -234,7 +252,7 @@ export default function OrdersScreen({ navigation }) {
         <View style={styles.actionRow}>
           {cfg.next && can('accept_orders') && (
             <TouchableOpacity style={[styles.actionBtn, { backgroundColor: cfg.nextBg, borderColor: cfg.nextColor, flex: 1 }]}
-              onPress={() => updateStatus(item.sub_order_id, cfg.next)} disabled={isUpdating}>
+              onPress={() => handleNextStatus(item, cfg)} disabled={isUpdating}>
               <Text style={[styles.actionBtnText, { color: cfg.nextColor }]}>{isUpdating ? '...' : cfg.nextLabel}</Text>
             </TouchableOpacity>
           )}
@@ -244,7 +262,7 @@ export default function OrdersScreen({ navigation }) {
               <Text style={[styles.actionBtnText, { color: '#FF453A' }]}>✕ Reject</Text>
             </TouchableOpacity>
           )}
-          {item.status === 'dispatched' && can('upload_invoice') && (
+          {item.invoice_upload_allowed && can('upload_invoice') && (
             <TouchableOpacity style={[styles.actionBtn, { backgroundColor: '#0A1F35', borderColor: '#185FA5' }]}
               onPress={() => navigation.navigate('UploadInvoice', { subOrder: item })}>
               <Text style={[styles.actionBtnText, { color: '#0A84FF' }]}>🧾 Invoice</Text>
@@ -288,6 +306,12 @@ export default function OrdersScreen({ navigation }) {
             onPress={() => navigation.getParent()?.navigate('ReportDownload')}>
             <Text style={{ fontSize: 14 }}>📥</Text>
             <Text style={{ color: '#fff', fontSize: 12, fontWeight: '700' }}>Report</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{ backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8, flexDirection: 'row', alignItems: 'center', gap: 5, borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)', marginLeft: 8 }}
+            onPress={() => navigation.getParent()?.navigate('BulkAssign')}>
+            <Text style={{ fontSize: 14 }}>🚚</Text>
+            <Text style={{ color: '#fff', fontSize: 12, fontWeight: '700' }}>Assign</Text>
           </TouchableOpacity>
         </View>
       </View>

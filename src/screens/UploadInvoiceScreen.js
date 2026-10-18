@@ -79,8 +79,24 @@ export default function UploadInvoiceScreen({ route, navigation }) {
   const uploadInvoice = async () => {
     if (!invoiceNumber) { Alert.alert('Error', 'Enter invoice number'); return; }
     if (!gstinWholesaler) { Alert.alert('Error', 'Enter your GSTIN'); return; }
+    if (!selectedFile) { Alert.alert('Error', 'Please select or capture the invoice file'); return; }
     setLoading(true);
     try {
+      const formData = new FormData();
+      formData.append('file', {
+        uri: selectedFile.uri,
+        name: selectedFile.name || `invoice_${Date.now()}.jpg`,
+        type: selectedFile.mimeType || 'image/jpeg',
+      });
+
+      const uploadRes = await api.post(
+        `/invoices/upload/${subOrder.sub_order_id}`,
+        formData,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
+      );
+
+      const { file_url, file_type, file_size_kb } = uploadRes.data;
+
       await api.post('/invoices', {
         sub_order_id: subOrder.sub_order_id,
         invoice_number: invoiceNumber,
@@ -89,15 +105,11 @@ export default function UploadInvoiceScreen({ route, navigation }) {
         gstin_wholesaler: gstinWholesaler,
         gstin_retailer: gstinRetailer,
         hsn_code: hsnCode,
-        file_url: selectedFile
-          ? `invoices/${subOrder.sub_order_id}/${invoiceNumber}.${selectedFile.name.split('.').pop()}`
-          : `invoices/${subOrder.sub_order_id}/${invoiceNumber}.pdf`,
-        file_type: selectedFile
-          ? selectedFile.mimeType?.includes('pdf') ? 'pdf' : 'jpg'
-          : 'pdf',
-        file_size_kb: selectedFile ? Math.round(selectedFile.size / 1024) : 100,
+        file_url,
+        file_type,
+        file_size_kb,
       });
-      Alert.alert('Success', 'Invoice uploaded — retailer notified', [
+      Alert.alert('Success', 'Invoice uploaded - retailer notified', [
         { text: 'OK', onPress: () => navigation.goBack() }
       ]);
     } catch (err) {

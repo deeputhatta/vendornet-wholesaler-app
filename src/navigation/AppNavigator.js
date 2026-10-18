@@ -13,6 +13,7 @@ import { usePermissions } from '../context/PermissionContext';
 import LoginScreen from '../screens/LoginScreen';
 import OrdersScreen from '../screens/OrdersScreen';
 import AssignDriverScreen from '../screens/AssignDriverScreen';
+import BulkAssignScreen from '../screens/BulkAssignScreen';
 import UploadInvoiceScreen from '../screens/UploadInvoiceScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import CategoryPickerScreen from '../screens/CategoryPickerScreen';
@@ -79,6 +80,8 @@ function MainStack() {
       <Stack.Screen name="Main" component={HomeTabs} />
       <Stack.Screen name="AssignDriver" component={AssignDriverScreen}
         options={{ headerShown: true, headerTitle: 'Assign Driver', headerStyle: { backgroundColor: c.surface }, headerTintColor: c.text, headerTitleStyle: { fontWeight: '600' }, headerBackTitle: '' }} />
+      <Stack.Screen name="BulkAssign" component={BulkAssignScreen}
+        options={{ headerShown: true, headerTitle: 'Assign Deliveries', headerStyle: { backgroundColor: c.surface }, headerTintColor: c.text, headerTitleStyle: { fontWeight: '600' }, headerBackTitle: '' }} />
       <Stack.Screen name="UploadInvoice" component={UploadInvoiceScreen}
         options={{ headerShown: true, headerTitle: 'Upload Invoice', headerStyle: { backgroundColor: c.surface }, headerTintColor: c.text, headerTitleStyle: { fontWeight: '600' }, headerBackTitle: '' }} />
       <Stack.Screen name="ReportDownload" component={ReportDownloadScreen}
